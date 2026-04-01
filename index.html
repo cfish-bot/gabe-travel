@@ -172,6 +172,27 @@
         .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .modal-status { font-size: 0.78rem; color: var(--danger); margin-top: 8px; min-height: 1.2em; }
 
+        /* ── Auth modal ── */
+        .auth-modal { text-align: center; }
+        .auth-modal .gh-logo { margin-bottom: 16px; }
+        .auth-modal p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
+        .auth-modal .gh-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px; border-radius: 8px; border: none;
+            background: #238636; color: white; font-size: 0.9rem; font-weight: 600;
+            font-family: inherit; cursor: pointer; text-decoration: none; transition: background 0.15s;
+        }
+        .auth-modal .gh-btn:hover { background: #2ea043; }
+        .auth-modal .token-input-wrap { margin-top: 20px; text-align: left; }
+        .auth-modal .token-input-wrap label { margin-bottom: 8px; }
+        .auth-modal .step { display: flex; align-items: flex-start; gap: 10px; text-align: left; margin-bottom: 10px; }
+        .auth-modal .step-num {
+            flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+            background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; margin-top: 1px;
+        }
+        .auth-modal .step-text { font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; }
+
         /* ── Snapshot Table ── */
         .snapshot-section { margin-top: 56px; }
         .snap-table { width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -568,18 +589,57 @@
         const API_URL = `https://api.github.com/repos/${REPO}/contents/data.json`;
 
         let currentData = { attachments: {}, names: {}, purposes: {} };
+        let pendingAction = null;
+        const TOKEN_URL = 'https://github.com/settings/tokens/new?scopes=repo&description=gabe-travel-dashboard';
 
         function getToken() {
-            let token = localStorage.getItem('gabe-travel-token');
-            if (!token) {
-                token = prompt('Enter a GitHub personal access token with repo scope for cfish-bot/gabe-travel:');
-                if (token) localStorage.setItem('gabe-travel-token', token.trim());
-            }
-            return token ? token.trim() : null;
+            return localStorage.getItem('gabe-travel-token');
+        }
+
+        function requireToken() {
+            return new Promise((resolve, reject) => {
+                const token = getToken();
+                if (token) { resolve(token); return; }
+                // Show auth modal
+                openModal('Connect to GitHub', `
+                    <div class="auth-modal">
+                        <svg class="gh-logo" width="48" height="48" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                        <div class="step">
+                            <span class="step-num">1</span>
+                            <span class="step-text">Create a personal access token for this dashboard</span>
+                        </div>
+                        <a class="gh-btn" href="${TOKEN_URL}" target="_blank" rel="noopener">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                            Generate Token on GitHub
+                        </a>
+                        <div class="step" style="margin-top:18px;">
+                            <span class="step-num">2</span>
+                            <span class="step-text">Copy the token and paste it below</span>
+                        </div>
+                        <div class="token-input-wrap">
+                            <label>Token</label>
+                            <input type="password" id="m-token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+                        </div>
+                    </div>
+                `, async () => {
+                    const t = document.getElementById('m-token').value.trim();
+                    if (!t) throw new Error('Token is required');
+                    // Validate token
+                    const test = await fetch(API_URL, {
+                        headers: { Authorization: `token ${t}`, Accept: 'application/vnd.github.v3+json' }
+                    });
+                    if (!test.ok) throw new Error('Invalid token — check scopes and try again');
+                    localStorage.setItem('gabe-travel-token', t);
+                    resolve(t);
+                });
+                // Override cancel to reject
+                const origClose = closeModal;
+                document.querySelector('#modal-overlay .modal-btn.secondary').onclick = () => { origClose(); reject(new Error('cancelled')); };
+            });
         }
 
         async function fetchDataFromAPI() {
-            const token = getToken();
+            const token = await requireToken();
             if (!token) return null;
             const resp = await fetch(API_URL, {
                 headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
@@ -592,8 +652,7 @@
         }
 
         async function saveData(message) {
-            const token = getToken();
-            if (!token) throw new Error('No token');
+            const token = await requireToken();
             // Get current SHA
             const file = await fetchDataFromAPI();
             const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2) + '\n')));
@@ -652,7 +711,8 @@
         });
 
         // ── Edit functions ──
-        function addLink(tripId) {
+        async function addLink(tripId) {
+            try { await requireToken(); } catch { return; }
             openModal('Add Link', `
                 <label>URL</label>
                 <input type="url" id="m-url" placeholder="https://...">
@@ -668,7 +728,8 @@
             });
         }
 
-        function addNote(tripId) {
+        async function addNote(tripId) {
+            try { await requireToken(); } catch { return; }
             openModal('Add Note', `
                 <label>Note</label>
                 <textarea id="m-note" placeholder="Type a note..."></textarea>
@@ -681,7 +742,8 @@
             });
         }
 
-        function addFiles(tripId) {
+        async function addFiles(tripId) {
+            try { await requireToken(); } catch { return; }
             openModal('Attach File Link', `
                 <label>File URL</label>
                 <input type="url" id="m-file-url" placeholder="https://drive.google.com/...">
@@ -697,7 +759,8 @@
             });
         }
 
-        function renameTrip(tripId) {
+        async function renameTrip(tripId) {
+            try { await requireToken(); } catch { return; }
             const current = (currentData.names || {})[tripId] || '';
             const el = document.querySelector(`#title-${tripId}, #snap-title-${tripId}`);
             const defaultName = el ? el.dataset.default : '';
@@ -714,7 +777,8 @@
             });
         }
 
-        function editPurpose(tripId) {
+        async function editPurpose(tripId) {
+            try { await requireToken(); } catch { return; }
             const current = (currentData.purposes || {})[tripId] || '';
             openModal('Edit Travel Purpose', `
                 <label>Purpose</label>
@@ -730,8 +794,6 @@
 
         async function removeAttachment(tripId, index) {
             if (!confirm('Remove this item?')) return;
-            const token = getToken();
-            if (!token) return;
             if (currentData.attachments[tripId]) {
                 currentData.attachments[tripId].splice(index, 1);
                 if (currentData.attachments[tripId].length === 0) delete currentData.attachments[tripId];

@@ -141,6 +141,37 @@
         }
         .attach-btn:hover { border-color: var(--accent); color: var(--accent-light); background: rgba(108,92,231,0.06); }
 
+        /* ── Modal ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+            z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px;
+            padding: 28px; width: 420px; max-width: 90vw; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+        }
+        .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 18px; }
+        .modal label { display: block; font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 600; }
+        .modal input, .modal textarea {
+            width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--card-border);
+            background: var(--bg); color: var(--text); font-family: inherit; font-size: 0.9rem;
+            outline: none; transition: border-color 0.15s; margin-bottom: 14px;
+        }
+        .modal input:focus, .modal textarea:focus { border-color: var(--accent); }
+        .modal textarea { resize: vertical; min-height: 70px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+        .modal-btn {
+            padding: 9px 20px; border-radius: 8px; border: none; font-family: inherit;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+        }
+        .modal-btn.primary { background: var(--accent); color: white; }
+        .modal-btn.primary:hover { background: #7c6cf7; }
+        .modal-btn.secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--card-border); }
+        .modal-btn.secondary:hover { border-color: var(--text-muted); }
+        .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .modal-status { font-size: 0.78rem; color: var(--danger); margin-top: 8px; min-height: 1.2em; }
+
         /* ── Snapshot Table ── */
         .snapshot-section { margin-top: 56px; }
         .snap-table { width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -517,74 +548,261 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="modal">
+            <h3 id="modal-title"></h3>
+            <div id="modal-body"></div>
+            <div class="modal-status" id="modal-status"></div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+                <button class="modal-btn primary" id="modal-save">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ── GitHub-backed data ──
         const REPO = 'cfish-bot/gabe-travel';
         const DATA_URL = `https://cfish-bot.github.io/gabe-travel/data.json?_t=${Date.now()}`;
-        const EDIT_URL = `https://github.com/${REPO}/edit/main/data.json`;
+        const API_URL = `https://api.github.com/repos/${REPO}/contents/data.json`;
 
+        let currentData = { attachments: {}, names: {}, purposes: {} };
+
+        function getToken() {
+            let token = localStorage.getItem('gabe-travel-token');
+            if (!token) {
+                token = prompt('Enter a GitHub personal access token with repo scope for cfish-bot/gabe-travel:');
+                if (token) localStorage.setItem('gabe-travel-token', token.trim());
+            }
+            return token ? token.trim() : null;
+        }
+
+        async function fetchDataFromAPI() {
+            const token = getToken();
+            if (!token) return null;
+            const resp = await fetch(API_URL, {
+                headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+            });
+            if (!resp.ok) {
+                if (resp.status === 401) { localStorage.removeItem('gabe-travel-token'); }
+                throw new Error(`GitHub API ${resp.status}`);
+            }
+            return resp.json();
+        }
+
+        async function saveData(message) {
+            const token = getToken();
+            if (!token) throw new Error('No token');
+            // Get current SHA
+            const file = await fetchDataFromAPI();
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2) + '\n')));
+            const resp = await fetch(API_URL, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `token ${token}`,
+                    Accept: 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message, content, sha: file.sha })
+            });
+            if (!resp.ok) {
+                if (resp.status === 401) { localStorage.removeItem('gabe-travel-token'); }
+                throw new Error(`Save failed (${resp.status})`);
+            }
+        }
+
+        // ── Modal system ──
+        function openModal(title, bodyHtml, onSave) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = bodyHtml;
+            document.getElementById('modal-status').textContent = '';
+            const saveBtn = document.getElementById('modal-save');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save';
+            saveBtn.onclick = async () => {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+                document.getElementById('modal-status').textContent = '';
+                try {
+                    await onSave();
+                    closeModal();
+                    loadAndRender();
+                } catch (e) {
+                    document.getElementById('modal-status').textContent = e.message;
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
+                }
+            };
+            document.getElementById('modal-overlay').classList.add('active');
+            const firstInput = document.querySelector('#modal-body input, #modal-body textarea');
+            if (firstInput) setTimeout(() => firstInput.focus(), 50);
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        document.getElementById('modal-overlay').addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ── Edit functions ──
+        function addLink(tripId) {
+            openModal('Add Link', `
+                <label>URL</label>
+                <input type="url" id="m-url" placeholder="https://...">
+                <label>Label</label>
+                <input type="text" id="m-label" placeholder="e.g. Meeting Agenda">
+            `, async () => {
+                const url = document.getElementById('m-url').value.trim();
+                const label = document.getElementById('m-label').value.trim();
+                if (!url) throw new Error('URL is required');
+                if (!currentData.attachments[tripId]) currentData.attachments[tripId] = [];
+                currentData.attachments[tripId].push({ type: 'link', value: url, label: label || url });
+                await saveData(`Add link to trip ${tripId}`);
+            });
+        }
+
+        function addNote(tripId) {
+            openModal('Add Note', `
+                <label>Note</label>
+                <textarea id="m-note" placeholder="Type a note..."></textarea>
+            `, async () => {
+                const note = document.getElementById('m-note').value.trim();
+                if (!note) throw new Error('Note is required');
+                if (!currentData.attachments[tripId]) currentData.attachments[tripId] = [];
+                currentData.attachments[tripId].push({ type: 'note', value: note });
+                await saveData(`Add note to trip ${tripId}`);
+            });
+        }
+
+        function addFiles(tripId) {
+            openModal('Attach File Link', `
+                <label>File URL</label>
+                <input type="url" id="m-file-url" placeholder="https://drive.google.com/...">
+                <label>Label</label>
+                <input type="text" id="m-file-label" placeholder="e.g. Expense Report">
+            `, async () => {
+                const url = document.getElementById('m-file-url').value.trim();
+                const label = document.getElementById('m-file-label').value.trim();
+                if (!url) throw new Error('File URL is required');
+                if (!currentData.attachments[tripId]) currentData.attachments[tripId] = [];
+                currentData.attachments[tripId].push({ type: 'file', value: url, label: label || url });
+                await saveData(`Attach file to trip ${tripId}`);
+            });
+        }
+
+        function renameTrip(tripId) {
+            const current = (currentData.names || {})[tripId] || '';
+            const el = document.querySelector(`#title-${tripId}, #snap-title-${tripId}`);
+            const defaultName = el ? el.dataset.default : '';
+            openModal('Rename Trip', `
+                <label>Trip Name</label>
+                <input type="text" id="m-name" value="${current}" placeholder="${defaultName}">
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:-8px;">Leave blank to use default name</div>
+            `, async () => {
+                const name = document.getElementById('m-name').value.trim();
+                if (!currentData.names) currentData.names = {};
+                if (name) { currentData.names[tripId] = name; }
+                else { delete currentData.names[tripId]; }
+                await saveData(`Rename trip ${tripId}`);
+            });
+        }
+
+        function editPurpose(tripId) {
+            const current = (currentData.purposes || {})[tripId] || '';
+            openModal('Edit Travel Purpose', `
+                <label>Purpose</label>
+                <textarea id="m-purpose" placeholder="e.g. Team offsite, client meetings...">${current}</textarea>
+            `, async () => {
+                const purpose = document.getElementById('m-purpose').value.trim();
+                if (!currentData.purposes) currentData.purposes = {};
+                if (purpose) { currentData.purposes[tripId] = purpose; }
+                else { delete currentData.purposes[tripId]; }
+                await saveData(`Update purpose for trip ${tripId}`);
+            });
+        }
+
+        async function removeAttachment(tripId, index) {
+            if (!confirm('Remove this item?')) return;
+            const token = getToken();
+            if (!token) return;
+            if (currentData.attachments[tripId]) {
+                currentData.attachments[tripId].splice(index, 1);
+                if (currentData.attachments[tripId].length === 0) delete currentData.attachments[tripId];
+            }
+            try {
+                await saveData(`Remove attachment from trip ${tripId}`);
+                loadAndRender();
+            } catch (e) { alert('Failed to save: ' + e.message); }
+        }
+
+        // ── Load & render ──
         async function loadAndRender() {
-            let data = { attachments: {}, names: {}, purposes: {} };
             try {
                 const resp = await fetch(DATA_URL);
-                data = await resp.json();
-            } catch (e) { console.warn('Failed to load data.json:', e); }
+                currentData = await resp.json();
+            } catch (e) {
+                console.warn('Failed to load data.json:', e);
+                currentData = { attachments: {}, names: {}, purposes: {} };
+            }
 
             // Names
-            const names = data.names || {};
+            const names = currentData.names || {};
             document.querySelectorAll('[id^="title-"], [id^="snap-title-"]').forEach(el => {
                 const tripId = el.id.replace('title-','').replace('snap-title-','');
                 el.innerHTML = names[tripId] || el.dataset.default;
             });
 
             // Purposes
-            const purposes = data.purposes || {};
+            const purposes = currentData.purposes || {};
             document.querySelectorAll('[id^="purpose-"]').forEach(el => {
                 const tripId = el.id.replace('purpose-feat-','').replace('purpose-','');
                 el.textContent = purposes[tripId] || '';
             });
 
             // Attachments
-            const attachments = data.attachments || {};
+            const attachments = currentData.attachments || {};
             document.querySelectorAll('.attachment-list').forEach(el => {
                 const tripId = el.id.replace('attachments-', '');
                 const items = attachments[tripId] || [];
                 if (items.length === 0) {
                     el.innerHTML = `<div style="color:var(--text-muted);font-size:0.82rem;opacity:0.5;padding:8px 0;">
                         No files or agendas attached yet.
-                        <a href="${EDIT_URL}" target="_blank" style="color:var(--accent-light);margin-left:4px;">Add via GitHub</a>
                     </div>`;
                     return;
                 }
-                el.innerHTML = items.map(item => {
+                el.innerHTML = items.map((item, idx) => {
+                    const removeBtn = `<button class="att-remove" onclick="removeAttachment('${tripId}', ${idx})" title="Remove">&times;</button>`;
                     if (item.type === 'link') {
                         return `<div class="attachment-item">
                             <span class="att-icon">🔗</span>
                             <a href="${item.value}" target="_blank" title="${item.label}">${item.label || item.value}</a>
+                            ${removeBtn}
                         </div>`;
                     } else if (item.type === 'note') {
                         return `<div class="attachment-item">
                             <span class="att-icon">📝</span>
                             <span class="att-note">${item.value}</span>
+                            ${removeBtn}
                         </div>`;
                     } else if (item.type === 'file') {
                         const isUrl = item.value && item.value.startsWith('http');
                         return `<div class="attachment-item">
                             <span class="att-icon">📎</span>
                             ${isUrl ? `<a href="${item.value}" target="_blank">${item.label || item.value}</a>` : `<span>${item.label || item.value}</span>`}
+                            ${removeBtn}
                         </div>`;
                     }
                     return '';
                 }).join('');
             });
         }
-
-        // ── All edit buttons open data.json on GitHub ──
-        function addLink(tripId) { window.open(EDIT_URL, '_blank'); }
-        function addNote(tripId) { window.open(EDIT_URL, '_blank'); }
-        function addFiles(tripId) { window.open(EDIT_URL, '_blank'); }
-        function renameTrip(tripId) { window.open(EDIT_URL, '_blank'); }
-        function editPurpose(tripId) { window.open(EDIT_URL, '_blank'); }
 
         // ── Init ──
         document.addEventListener('DOMContentLoaded', () => {

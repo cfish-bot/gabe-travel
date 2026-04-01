@@ -518,74 +518,41 @@
     </div>
 
     <script>
-        // ── Google Sheets Backend ──
-        const SHEET_ID = '1iPyPuZzdweuJjNdhNuKwB8tVk-3QlJYZhTTLfRyX6Nk';
-        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
-        const csvUrl = (tab) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${tab}&_t=${Date.now()}`;
+        // ── GitHub-backed data ──
+        const REPO = 'cfish-bot/gabe-travel';
+        const DATA_URL = `https://cfish-bot.github.io/gabe-travel/data.json?_t=${Date.now()}`;
+        const EDIT_URL = `https://github.com/${REPO}/edit/main/data.json`;
 
-        function parseCSV(text) {
-            if (!text.trim()) return [];
-            return text.trim().split('\n').map(row => {
-                const cells = [];
-                let current = '', inQuotes = false;
-                for (let i = 0; i < row.length; i++) {
-                    const ch = row[i];
-                    if (ch === '"') { inQuotes = !inQuotes; continue; }
-                    if (ch === ',' && !inQuotes) { cells.push(current); current = ''; continue; }
-                    current += ch;
-                }
-                cells.push(current);
-                return cells;
-            });
-        }
-
-        async function fetchSheet(tab) {
-            try {
-                const resp = await fetch(csvUrl(tab));
-                const text = await resp.text();
-                const rows = parseCSV(text);
-                return rows.slice(1); // skip header
-            } catch (e) { console.warn('Sheet fetch error:', e); return []; }
-        }
-
-        // ── Render from Sheets ──
         async function loadAndRender() {
-            const [attachRows, nameRows, purposeRows] = await Promise.all([
-                fetchSheet('attachments'),
-                fetchSheet('names'),
-                fetchSheet('purposes'),
-            ]);
+            let data = { attachments: {}, names: {}, purposes: {} };
+            try {
+                const resp = await fetch(DATA_URL);
+                data = await resp.json();
+            } catch (e) { console.warn('Failed to load data.json:', e); }
 
-            // Names: trip_id -> custom_name
-            const names = {};
-            nameRows.forEach(r => { if (r[0] && r[1]) names[r[0]] = r[1]; });
+            // Names
+            const names = data.names || {};
             document.querySelectorAll('[id^="title-"], [id^="snap-title-"]').forEach(el => {
                 const tripId = el.id.replace('title-','').replace('snap-title-','');
                 el.innerHTML = names[tripId] || el.dataset.default;
             });
 
-            // Purposes: trip_id -> purpose
-            const purposes = {};
-            purposeRows.forEach(r => { if (r[0] && r[1]) purposes[r[0]] = r[1]; });
+            // Purposes
+            const purposes = data.purposes || {};
             document.querySelectorAll('[id^="purpose-"]').forEach(el => {
                 const tripId = el.id.replace('purpose-feat-','').replace('purpose-','');
                 el.textContent = purposes[tripId] || '';
             });
 
-            // Attachments: group by trip_id
-            const attachments = {};
-            attachRows.forEach(r => {
-                if (!r[0]) return;
-                if (!attachments[r[0]]) attachments[r[0]] = [];
-                attachments[r[0]].push({ type: r[1], value: r[2], label: r[3] || '' });
-            });
+            // Attachments
+            const attachments = data.attachments || {};
             document.querySelectorAll('.attachment-list').forEach(el => {
                 const tripId = el.id.replace('attachments-', '');
                 const items = attachments[tripId] || [];
                 if (items.length === 0) {
                     el.innerHTML = `<div style="color:var(--text-muted);font-size:0.82rem;opacity:0.5;padding:8px 0;">
                         No files or agendas attached yet.
-                        <a href="${SHEET_URL}#gid=0" target="_blank" style="color:var(--accent-light);margin-left:4px;">Add in Sheet</a>
+                        <a href="${EDIT_URL}" target="_blank" style="color:var(--accent-light);margin-left:4px;">Add via GitHub</a>
                     </div>`;
                     return;
                 }
@@ -601,7 +568,7 @@
                             <span class="att-note">${item.value}</span>
                         </div>`;
                     } else if (item.type === 'file') {
-                        const isUrl = item.value.startsWith('http');
+                        const isUrl = item.value && item.value.startsWith('http');
                         return `<div class="attachment-item">
                             <span class="att-icon">📎</span>
                             ${isUrl ? `<a href="${item.value}" target="_blank">${item.label || item.value}</a>` : `<span>${item.label || item.value}</span>`}
@@ -612,34 +579,16 @@
             });
         }
 
-        // ── Button handlers: open Sheet to the right tab ──
-        function addLink(tripId) {
-            window.open(`${SHEET_URL}#gid=1219447661`, '_blank');
-        }
-        function addNote(tripId) {
-            window.open(`${SHEET_URL}#gid=1219447661`, '_blank');
-        }
-        function addFiles(tripId) {
-            window.open(`${SHEET_URL}#gid=1219447661`, '_blank');
-        }
-        function renameTrip(tripId) {
-            window.open(`${SHEET_URL}#gid=${getGid('names')}`, '_blank');
-        }
-        function editPurpose(tripId) {
-            window.open(`${SHEET_URL}#gid=${getGid('purposes')}`, '_blank');
-        }
-
-        function getGid(tab) {
-            // Sheet tab GIDs (set after creation)
-            const gids = { attachments: 1219447661, names: 1355214636, purposes: 1558449542 };
-            return gids[tab] || 0;
-        }
+        // ── All edit buttons open data.json on GitHub ──
+        function addLink(tripId) { window.open(EDIT_URL, '_blank'); }
+        function addNote(tripId) { window.open(EDIT_URL, '_blank'); }
+        function addFiles(tripId) { window.open(EDIT_URL, '_blank'); }
+        function renameTrip(tripId) { window.open(EDIT_URL, '_blank'); }
+        function editPurpose(tripId) { window.open(EDIT_URL, '_blank'); }
 
         // ── Init ──
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRender();
-            // Auto-refresh every 30 seconds to pick up sheet changes
-            setInterval(loadAndRender, 30000);
         });
     </script>
 </body>

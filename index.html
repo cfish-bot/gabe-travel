@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabe Rodrigues — Travel Dashboard 2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f0f13;
+            --card-bg: #1a1a24;
+            --card-border: #2a2a3a;
+            --text: #e8e8f0;
+            --text-muted: #8888a0;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --upcoming: #00b894;
+            --upcoming-bg: rgba(0, 184, 148, 0.1);
+            --completed: #636e72;
+            --completed-bg: rgba(99, 110, 114, 0.08);
+            --danger: #e17055;
+        }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 56px 40px 40px; border-bottom: 1px solid var(--card-border);
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: -50%; right: -20%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(108,92,231,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-content { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 6px; }
+        .hero h1 span { color: var(--accent-light); }
+        .hero-subtitle { font-size: 1.05rem; color: var(--text-muted); font-weight: 300; }
+        .stats-bar { display: flex; gap: 32px; margin-top: 28px; flex-wrap: wrap; }
+        .hero-stat { text-align: center; }
+        .hero-stat .num { font-size: 2rem; font-weight: 800; color: var(--accent-light); line-height: 1; }
+        .hero-stat .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-top: 4px; }
+
+        /* ── Main ── */
+        .main { max-width: 1200px; margin: 0 auto; padding: 32px 40px 60px; }
+        .section-heading {
+            font-size: 1.4rem; font-weight: 700; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .section-heading .badge {
+            background: var(--accent); color: white; font-size: 0.72rem; font-weight: 600;
+            padding: 3px 12px; border-radius: 12px;
+        }
+
+        /* ── Featured Card (next trip) ── */
+        .featured-card {
+            background: var(--card-bg); border: 1px solid var(--card-border); border-left: 4px solid var(--upcoming);
+            border-radius: 16px; margin-bottom: 24px; overflow: hidden;
+        }
+        .feat-top { padding: 24px 28px 16px; }
+        .feat-header { display: flex; align-items: flex-start; gap: 16px; }
+        .feat-emoji { font-size: 2.8rem; line-height: 1; }
+        .feat-title-wrap { flex: 1; min-width: 0; }
+        .feat-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; display: inline; }
+        .feat-dates { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
+        .feat-countdown {
+            margin-left: auto; background: var(--upcoming-bg); color: var(--upcoming);
+            font-size: 0.78rem; font-weight: 700; padding: 6px 14px; border-radius: 20px;
+            white-space: nowrap; flex-shrink: 0; align-self: flex-start;
+        }
+        .feat-stats { display: flex; gap: 0; margin-top: 18px; }
+        .feat-stat { flex: 1; text-align: center; padding: 12px 0; border-right: 1px solid var(--card-border); }
+        .feat-stat:last-child { border-right: none; }
+        .feat-stat-num { font-size: 1.5rem; font-weight: 700; display: block; color: var(--accent-light); }
+        .feat-stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+        .feat-body { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--card-border); }
+        .feat-itinerary { padding: 20px 28px; border-right: 1px solid var(--card-border); max-height: 500px; overflow-y: auto; }
+        .feat-itinerary h4, .feat-attachments h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 12px; }
+        .feat-detail { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; font-size: 0.85rem; color: var(--text-muted); }
+        .feat-icon { flex-shrink: 0; }
+        .chrono-day {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--accent-light); margin: 14px 0 6px;
+            padding-bottom: 4px; border-bottom: 1px solid var(--card-border);
+        }
+        .chrono-day:first-child { margin-top: 0; }
+        .feat-enrichment {
+            font-size: 0.78rem; color: var(--upcoming); padding: 4px 0 6px 26px;
+            line-height: 1.4; font-style: italic; opacity: 0.85;
+        }
+        .flight-time {
+            display: inline-block; background: rgba(108,92,231,0.15); color: var(--accent-light);
+            font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+            margin-right: 8px; white-space: nowrap;
+        }
+
+        /* ── Purpose / reason ── */
+        .snap-purpose, .feat-purpose {
+            font-size: 0.78rem; color: var(--text-muted); cursor: pointer;
+            margin-top: 3px; font-style: italic; opacity: 0.7;
+            transition: opacity 0.15s;
+        }
+        .snap-purpose:hover, .feat-purpose:hover { opacity: 1; color: var(--accent-light); }
+        .snap-purpose:empty::after, .feat-purpose:empty::after {
+            content: '+ Add travel purpose'; font-size: 0.72rem; opacity: 0.4;
+        }
+        .feat-purpose { margin-top: 6px; }
+
+        /* ── Rename button ── */
+        .rename-btn, .rename-btn-sm {
+            background: none; border: none; color: var(--text-muted); cursor: pointer;
+            opacity: 0.4; padding: 2px 4px; vertical-align: middle; transition: opacity 0.15s;
+        }
+        .rename-btn:hover, .rename-btn-sm:hover { opacity: 1; color: var(--accent-light); }
+        .rename-btn { margin-left: 8px; }
+        .rename-btn-sm { margin-left: 4px; }
+
+        /* ── Attachments ── */
+        .feat-attachments { padding: 20px 28px; }
+        .attachment-list { min-height: 60px; margin-bottom: 14px; }
+        .attachment-item {
+            display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+            background: rgba(108,92,231,0.08); border: 1px solid rgba(108,92,231,0.2);
+            border-radius: 10px; margin-bottom: 8px; font-size: 0.84rem;
+        }
+        .attachment-item a { color: var(--accent-light); text-decoration: none; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .attachment-item a:hover { text-decoration: underline; }
+        .attachment-item .att-icon { flex-shrink: 0; font-size: 1rem; }
+        .attachment-item .att-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0 4px; flex-shrink: 0; opacity: 0.5; }
+        .attachment-item .att-remove:hover { opacity: 1; color: var(--danger); }
+        .att-note { color: var(--text); white-space: normal; word-break: break-word; }
+        .attachment-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .attach-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: 8px; border: 1px solid var(--card-border);
+            background: transparent; color: var(--text-muted); font-size: 0.8rem;
+            font-family: inherit; cursor: pointer; transition: all 0.15s;
+        }
+        .attach-btn:hover { border-color: var(--accent); color: var(--accent-light); background: rgba(108,92,231,0.06); }
+
+        /* ── Snapshot Table ── */
+        .snapshot-section { margin-top: 56px; }
+        .snap-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .snap-table thead th {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); padding: 10px 12px; text-align: left;
+            border-bottom: 1px solid var(--card-border); font-weight: 600;
+        }
+        .snap-table thead th:nth-child(n+4) { text-align: center; }
+        .snap-row { transition: background 0.12s; }
+        .snap-row:hover { background: rgba(108,92,231,0.04); }
+        .snap-row td { padding: 14px 12px; border-bottom: 1px solid rgba(42,42,58,0.5); vertical-align: middle; }
+        .snap-emoji { font-size: 1.2rem; width: 36px; }
+        .snap-name { font-weight: 600; font-size: 0.92rem; white-space: nowrap; }
+        .snap-dest { }
+        .snap-dates { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+        .snap-num { text-align: center; font-size: 0.88rem; color: var(--text-muted); font-weight: 500; }
+        .snap-badge {
+            font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; padding: 3px 8px; border-radius: 8px; white-space: nowrap;
+        }
+        .snap-badge.upcoming { background: var(--upcoming-bg); color: var(--upcoming); }
+        .snap-badge.completed { background: var(--completed-bg); color: var(--completed); }
+
+        .generated {
+            text-align: center; color: var(--text-muted); font-size: 0.72rem;
+            margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--card-border);
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 36px 20px 30px; }
+            .hero h1 { font-size: 1.7rem; }
+            .main { padding: 20px; }
+            .feat-body { grid-template-columns: 1fr; }
+            .feat-itinerary { border-right: none; border-bottom: 1px solid var(--card-border); }
+            .stats-bar { gap: 16px; }
+            .snap-table { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>✈️ <span>Gabe Rodrigues</span> — 2026 Travel</h1>
+            <p class="hero-subtitle">VP, Ads, Partnerships & Payments F&S</p>
+            <div class="stats-bar">
+                <div class="hero-stat"><div class="num">14</div><div class="label">Total Trips</div></div>
+                <div class="hero-stat"><div class="num">37</div><div class="label">Flights</div></div>
+                <div class="hero-stat"><div class="num">21</div><div class="label">Hotel Stays</div></div>
+                <div class="hero-stat"><div class="num">59</div><div class="label">Car Services</div></div>
+                <div class="hero-stat"><div class="num">12</div><div class="label">Destinations</div></div>
+                <div class="hero-stat"><div class="num">50</div><div class="label">Travel Days</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- Next Trip Up (Featured) -->
+        <div class="section-heading">Next Trip</div>
+        
+    <div class="featured-card" id="trip-20260412">
+        <div class="feat-top">
+            <div class="feat-header">
+                <div class="feat-emoji">🇰🇷</div>
+                <div class="feat-title-wrap">
+                    <h2 class="feat-title" id="title-20260412" data-default="SFO → BKK → SIN">SFO → BKK → SIN</h2>
+                    <button class="rename-btn" onclick="renameTrip('20260412')" title="Rename trip">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    </button>
+                    <div class="feat-dates">Apr 12, 2026 — Apr 22, 2026</div>
+                    <div class="feat-purpose" id="purpose-feat-20260412" onclick="editPurpose('20260412')"></div>
+                </div>
+                <div class="feat-countdown">In 11 days</div>
+            </div>
+            <div class="feat-stats">
+                <div class="feat-stat"><span class="feat-stat-num">11</span><span class="feat-stat-label">days</span></div>
+                <div class="feat-stat"><span class="feat-stat-num">6</span><span class="feat-stat-label">flights</span></div>
+                <div class="feat-stat"><span class="feat-stat-num">6</span><span class="feat-stat-label">hotels</span></div>
+                <div class="feat-stat"><span class="feat-stat-num">5</span><span class="feat-stat-label">car services</span></div>
+            </div>
+        </div>
+        <div class="feat-body">
+            <div class="feat-itinerary">
+                <h4>Itinerary</h4>
+                <div class="feat-detail-list">
+                    <div class="chrono-day">Sunday, Apr 12</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">10:00 AM</span>🚗  10:00 am Pick up / Home &gt; SFO</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">12:40 PM</span>Flight: SFO (DL7861) to ICN Confirmation HK3NAM</span></div><div class="feat-enrichment">Departs SFO Terminal 1 → Arrives ICN. Layover 2h 25m in Seoul.</div><div class="chrono-day">Monday, Apr 13</div><div class="feat-detail"><span class="feat-icon">🚗</span><span>APAC Ads 2026 Offsite (Bangkok) | 13-16 April</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">1:20 AM</span>Layover in ICN Seoul (2h 25m)</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">3:45 AM</span>Flight: ICN (DL7917) to BKK Confirmation HK3NAM</span></div><div class="feat-enrichment">Arrives BKK Suvarnabhumi 11:35pm local. Four Seasons limo meets at Gate 5, Exit B — look for hotel signage (no name displayed). BMW 7 Series.</div><div class="feat-detail"><span class="feat-icon">🏨</span><span><span class="flight-time">9:35 AM</span>🚗 Four Seasons Limo: BKK Airport → Hotel</span></div><div class="feat-detail"><span class="feat-icon">🏨</span><span><span class="flight-time">4:30 PM</span>APAC Ads Offsite - Hotel Buffet Breakfast — Four Seasons Hotel Bangkok at Chao Phraya River, 300/1 ถ. เจริญกรุง Khwaeng Yan Nawa, Khet Sathon, Krung Thep Maha Nakhon 10120, Thailand</span></div><div class="chrono-day">Tuesday, Apr 14</div><div class="feat-detail"><span class="feat-icon">🏨</span><span><span class="flight-time">4:30 PM</span>APAC Ads Offsite - Hotel Buffet Breakfast — Four Seasons Hotel Bangkok at Chao Phraya River, 300/1 ถ. เจริญกรุง Khwaeng Yan Nawa, Khet Sathon, Krung Thep Maha Nakhon 10120, Thailand</span></div><div class="chrono-day">Wednesday, Apr 15</div><div class="feat-detail"><span class="feat-icon">🏨</span><span><span class="flight-time">4:30 PM</span>APAC Ads Offsite - Hotel Buffet Breakfast — Four Seasons Hotel Bangkok at Chao Phraya River, 300/1 ถ. เจริญกรุง Khwaeng Yan Nawa, Khet Sathon, Krung Thep Maha Nakhon 10120, Thailand</span></div><div class="feat-detail"><span class="feat-icon">🏨</span><span><span class="flight-time">11:00 PM</span>🚗 Four Seasons Limo: Hotel → BKK Airport 1:00pm Pickup</span></div><div class="feat-enrichment">Updated pickup: 1:00 PM from hotel. BMW 7 Series. Charged to room. Allow 3hrs before TG409 departure at 4:25 PM.</div><div class="chrono-day">Thursday, Apr 16</div><div class="feat-detail"><span class="feat-icon">🏨</span><span>Stay: The Westin Singapore, Singapore Confirmation 73065514 — The Westin Singapore, Singapore</span></div><div class="feat-enrichment">Confirmation #73065514 | Check-in Thu Apr 16, 3:00 PM | Check-out Wed Apr 22, 12:00 PM | Guest Room, 1 King.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">2:25 AM</span>Flight: BKK (TG0409) to SIN Confirmation C84XX6</span></div><div class="feat-enrichment">Departs BKK 4:25 PM local → Arrives SIN Changi 7:40 PM local.</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:45 AM</span>🚗 7:45 pm pickup / SIN &gt; Westin Singapore </span></div><div class="feat-enrichment">7:45 PM pickup from Changi Airport → The Westin Singapore.</div><div class="chrono-day">Tuesday, Apr 21</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">3:30 PM</span>6:30 am pick up / Car Service The Westin &gt; SIN airport</span></div><div class="feat-enrichment">6:30 AM pickup from The Westin → Changi Airport.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">6:00 PM</span>Flight: SIN (UA0002) to SFO Confirmation EWD535</span></div><div class="feat-enrichment">Departs SIN Changi → Arrives SFO. Confirmation EWD535.</div><div class="chrono-day">Wednesday, Apr 22</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">9:15 AM</span>Travel to correct Terminal go to Airport Lounge  </span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">4:00 PM</span>Break / Layover</span></div>
+                </div>
+            </div>
+            <div class="feat-attachments">
+                <h4>Agendas & Files</h4>
+                <div class="attachment-list" id="attachments-20260412"></div>
+                <div class="attachment-actions">
+                    <button class="attach-btn" onclick="addLink('20260412')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        Add Link
+                    </button>
+                    <button class="attach-btn" onclick="addNote('20260412')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        Add Note
+                    </button>
+                    <button class="attach-btn" onclick="addFiles('20260412')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                        Attach File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Upcoming Trips -->
+        
+        <div class="snapshot-section" style="margin-top:40px;">
+            <div class="section-heading">Trips Coming Up <span class="badge">1</span></div>
+            <table class="snap-table">
+                <thead><tr><th></th><th>Trip</th><th>Dates</th><th>Days</th><th>Flights</th><th>Hotels</th><th>Car Svc</th><th>Status</th></tr></thead>
+                <tbody>
+    <tr class="snap-row upcoming" data-trip-id="20260601">
+        <td class="snap-emoji">🌴</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260601" data-default="Los Angeles (BUR)">Los Angeles (BUR)</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260601')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260601" onclick="editPurpose('20260601')"></div>
+        </td>
+        <td class="snap-dates">Jun 01, 2026 — Jun 01, 2026</td>
+        <td class="snap-num">1d</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">1</td>
+        <td><span class="snap-badge upcoming">UPCOMING</span></td>
+    </tr></tbody>
+            </table>
+        </div>
+        
+
+        <!-- Completed Trips -->
+        
+        <div class="snapshot-section">
+            <div class="section-heading">Completed Trips <span class="badge">12</span></div>
+            <table class="snap-table">
+                <thead><tr><th></th><th>Trip</th><th>Dates</th><th>Days</th><th>Flights</th><th>Hotels</th><th>Car Svc</th><th>Status</th></tr></thead>
+                <tbody>
+    <tr class="snap-row completed" data-trip-id="20260106">
+        <td class="snap-emoji">🎰</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260106" data-default="Las Vegas">Las Vegas</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260106')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260106" onclick="editPurpose('20260106')"></div>
+        </td>
+        <td class="snap-dates">Jan 06, 2026 — Jan 11, 2026</td>
+        <td class="snap-num">6d</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">6</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260119">
+        <td class="snap-emoji">🗽</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260119" data-default="New York &rarr; São Paulo">New York &rarr; São Paulo</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260119')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260119" onclick="editPurpose('20260119')"></div>
+        </td>
+        <td class="snap-dates">Jan 19, 2026 — Jan 24, 2026</td>
+        <td class="snap-num">6d</td>
+        <td class="snap-num">5</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">8</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260204">
+        <td class="snap-emoji">⛷️</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260204" data-default="Salt Lake City &rarr; Columbus, OH">Salt Lake City &rarr; Columbus, OH</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260204')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260204" onclick="editPurpose('20260204')"></div>
+        </td>
+        <td class="snap-dates">Feb 04, 2026 — Feb 04, 2026</td>
+        <td class="snap-num">1d</td>
+        <td class="snap-num">3</td>
+        <td class="snap-num">0</td>
+        <td class="snap-num">1</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260206">
+        <td class="snap-emoji">✈️</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260206" data-default="Atlanta">Atlanta</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260206')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260206" onclick="editPurpose('20260206')"></div>
+        </td>
+        <td class="snap-dates">Feb 06, 2026 — Feb 06, 2026</td>
+        <td class="snap-num">1d</td>
+        <td class="snap-num">3</td>
+        <td class="snap-num">0</td>
+        <td class="snap-num">1</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260208">
+        <td class="snap-emoji">🌴</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260208" data-default="Los Angeles (BUR)">Los Angeles (BUR)</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260208')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260208" onclick="editPurpose('20260208')"></div>
+        </td>
+        <td class="snap-dates">Feb 08, 2026 — Feb 12, 2026</td>
+        <td class="snap-num">5d</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">5</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260218">
+        <td class="snap-emoji">🗽</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260218" data-default="New York &rarr; São Paulo &rarr; Los Angeles">New York &rarr; São Paulo &rarr; Los Angeles</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260218')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260218" onclick="editPurpose('20260218')"></div>
+        </td>
+        <td class="snap-dates">Feb 18, 2026 — Feb 21, 2026</td>
+        <td class="snap-num">4d</td>
+        <td class="snap-num">6</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">6</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260226">
+        <td class="snap-emoji">🌴</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260226" data-default="Los Angeles (BUR)">Los Angeles (BUR)</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260226')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260226" onclick="editPurpose('20260226')"></div>
+        </td>
+        <td class="snap-dates">Feb 26, 2026 — Feb 26, 2026</td>
+        <td class="snap-num">1d</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">0</td>
+        <td class="snap-num">6</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260302">
+        <td class="snap-emoji">🌉</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260302" data-default="San Francisco">San Francisco</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260302')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260302" onclick="editPurpose('20260302')"></div>
+        </td>
+        <td class="snap-dates">Mar 02, 2026 — Mar 04, 2026</td>
+        <td class="snap-num">2d</td>
+        <td class="snap-num">0</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">3</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260309">
+        <td class="snap-emoji">🌴</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260309" data-default="Los Angeles (BUR)">Los Angeles (BUR)</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260309')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260309" onclick="editPurpose('20260309')"></div>
+        </td>
+        <td class="snap-dates">Mar 09, 2026 — Mar 09, 2026</td>
+        <td class="snap-num">1d</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">0</td>
+        <td class="snap-num">4</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260316">
+        <td class="snap-emoji">🗽</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260316" data-default="New York">New York</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260316')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260316" onclick="editPurpose('20260316')"></div>
+        </td>
+        <td class="snap-dates">Mar 16, 2026 — Mar 19, 2026</td>
+        <td class="snap-num">4d</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">3</td>
+        <td class="snap-num">4</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260322">
+        <td class="snap-emoji">🌴</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260322" data-default="Los Angeles &rarr; Los Angeles (BUR)">Los Angeles &rarr; Los Angeles (BUR)</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260322')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260322" onclick="editPurpose('20260322')"></div>
+        </td>
+        <td class="snap-dates">Mar 22, 2026 — Mar 26, 2026</td>
+        <td class="snap-num">5d</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">5</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260330">
+        <td class="snap-emoji">🌴</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260330" data-default="Los Angeles &rarr; Los Angeles (BUR)">Los Angeles &rarr; Los Angeles (BUR)</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260330')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260330" onclick="editPurpose('20260330')"></div>
+        </td>
+        <td class="snap-dates">Mar 30, 2026 — Mar 31, 2026</td>
+        <td class="snap-num">2d</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">4</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr></tbody>
+            </table>
+        </div>
+        
+
+        <div class="generated">
+            Generated on March 31, 2026 — Data pulled from Google Calendar travel-coded events
+        </div>
+    </div>
+
+    <script>
+        // ── Google Sheets Backend ──
+        const SHEET_ID = '1iPyPuZzdweuJjNdhNuKwB8tVk-3QlJYZhTTLfRyX6Nk';
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+        const csvUrl = (tab) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${tab}&_t=${Date.now()}`;
+
+        function parseCSV(text) {
+            if (!text.trim()) return [];
+            return text.trim().split('\n').map(row => {
+                const cells = [];
+                let current = '', inQuotes = false;
+                for (let i = 0; i < row.length; i++) {
+                    const ch = row[i];
+                    if (ch === '"') { inQuotes = !inQuotes; continue; }
+                    if (ch === ',' && !inQuotes) { cells.push(current); current = ''; continue; }
+                    current += ch;
+                }
+                cells.push(current);
+                return cells;
+            });
+        }
+
+        async function fetchSheet(tab) {
+            try {
+                const resp = await fetch(csvUrl(tab));
+                const text = await resp.text();
+                const rows = parseCSV(text);
+                return rows.slice(1); // skip header
+            } catch (e) { console.warn('Sheet fetch error:', e); return []; }
+        }
+
+        // ── Render from Sheets ──
+        async function loadAndRender() {
+            const [attachRows, nameRows, purposeRows] = await Promise.all([
+                fetchSheet('attachments'),
+                fetchSheet('names'),
+                fetchSheet('purposes'),
+            ]);
+
+            // Names: trip_id -> custom_name
+            const names = {};
+            nameRows.forEach(r => { if (r[0] && r[1]) names[r[0]] = r[1]; });
+            document.querySelectorAll('[id^="title-"], [id^="snap-title-"]').forEach(el => {
+                const tripId = el.id.replace('title-','').replace('snap-title-','');
+                el.innerHTML = names[tripId] || el.dataset.default;
+            });
+
+            // Purposes: trip_id -> purpose
+            const purposes = {};
+            purposeRows.forEach(r => { if (r[0] && r[1]) purposes[r[0]] = r[1]; });
+            document.querySelectorAll('[id^="purpose-"]').forEach(el => {
+                const tripId = el.id.replace('purpose-feat-','').replace('purpose-','');
+                el.textContent = purposes[tripId] || '';
+            });
+
+            // Attachments: group by trip_id
+            const attachments = {};
+            attachRows.forEach(r => {
+                if (!r[0]) return;
+                if (!attachments[r[0]]) attachments[r[0]] = [];
+                attachments[r[0]].push({ type: r[1], value: r[2], label: r[3] || '' });
+            });
+            document.querySelectorAll('.attachment-list').forEach(el => {
+                const tripId = el.id.replace('attachments-', '');
+                const items = attachments[tripId] || [];
+                if (items.length === 0) {
+                    el.innerHTML = `<div style="color:var(--text-muted);font-size:0.82rem;opacity:0.5;padding:8px 0;">
+                        No files or agendas attached yet.
+                        <a href="${SHEET_URL}#gid=0" target="_blank" style="color:var(--accent-light);margin-left:4px;">Add in Sheet</a>
+                    </div>`;
+                    return;
+                }
+                el.innerHTML = items.map(item => {
+                    if (item.type === 'link') {
+                        return `<div class="attachment-item">
+                            <span class="att-icon">🔗</span>
+                            <a href="${item.value}" target="_blank" title="${item.label}">${item.label || item.value}</a>
+                        </div>`;
+                    } else if (item.type === 'note') {
+                        return `<div class="attachment-item">
+                            <span class="att-icon">📝</span>
+                            <span class="att-note">${item.value}</span>
+                        </div>`;
+                    } else if (item.type === 'file') {
+                        const isUrl = item.value.startsWith('http');
+                        return `<div class="attachment-item">
+                            <span class="att-icon">📎</span>
+                            ${isUrl ? `<a href="${item.value}" target="_blank">${item.label || item.value}</a>` : `<span>${item.label || item.value}</span>`}
+                        </div>`;
+                    }
+                    return '';
+                }).join('');
+            });
+        }
+
+        // ── Button handlers: open Sheet to the right tab ──
+        function addLink(tripId) {
+            window.open(`${SHEET_URL}#gid=1219447661`, '_blank');
+        }
+        function addNote(tripId) {
+            window.open(`${SHEET_URL}#gid=1219447661`, '_blank');
+        }
+        function addFiles(tripId) {
+            window.open(`${SHEET_URL}#gid=1219447661`, '_blank');
+        }
+        function renameTrip(tripId) {
+            window.open(`${SHEET_URL}#gid=${getGid('names')}`, '_blank');
+        }
+        function editPurpose(tripId) {
+            window.open(`${SHEET_URL}#gid=${getGid('purposes')}`, '_blank');
+        }
+
+        function getGid(tab) {
+            // Sheet tab GIDs (set after creation)
+            const gids = { attachments: 1219447661, names: 1355214636, purposes: 1558449542 };
+            return gids[tab] || 0;
+        }
+
+        // ── Init ──
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAndRender();
+            // Auto-refresh every 30 seconds to pick up sheet changes
+            setInterval(loadAndRender, 30000);
+        });
+    </script>
+</body>
+</html>

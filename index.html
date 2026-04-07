@@ -172,27 +172,6 @@
         .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .modal-status { font-size: 0.78rem; color: var(--danger); margin-top: 8px; min-height: 1.2em; }
 
-        /* ── Auth modal ── */
-        .auth-modal { text-align: center; }
-        .auth-modal .gh-logo { margin-bottom: 16px; }
-        .auth-modal p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
-        .auth-modal .gh-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 10px 22px; border-radius: 8px; border: none;
-            background: #238636; color: white; font-size: 0.9rem; font-weight: 600;
-            font-family: inherit; cursor: pointer; text-decoration: none; transition: background 0.15s;
-        }
-        .auth-modal .gh-btn:hover { background: #2ea043; }
-        .auth-modal .token-input-wrap { margin-top: 20px; text-align: left; }
-        .auth-modal .token-input-wrap label { margin-bottom: 8px; }
-        .auth-modal .step { display: flex; align-items: flex-start; gap: 10px; text-align: left; margin-bottom: 10px; }
-        .auth-modal .step-num {
-            flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
-            background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700;
-            display: flex; align-items: center; justify-content: center; margin-top: 1px;
-        }
-        .auth-modal .step-text { font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; }
-
         /* ── Snapshot Table ── */
         .snapshot-section { margin-top: 56px; }
         .snap-table { width: 100%; border-collapse: separate; border-spacing: 0; }
@@ -239,11 +218,11 @@
             <h1>✈️ <span>Gabe Rodrigues</span> — 2026 Travel</h1>
             <p class="hero-subtitle">VP, Ads, Partnerships & Payments F&S</p>
             <div class="stats-bar">
-                <div class="hero-stat"><div class="num">14</div><div class="label">Total Trips</div></div>
-                <div class="hero-stat"><div class="num">37</div><div class="label">Flights</div></div>
+                <div class="hero-stat"><div class="num">16</div><div class="label">Total Trips</div></div>
+                <div class="hero-stat"><div class="num">40</div><div class="label">Flights</div></div>
                 <div class="hero-stat"><div class="num">11</div><div class="label">Hotel Stays</div></div>
-                <div class="hero-stat"><div class="num">73</div><div class="label">Car Services</div></div>
-                <div class="hero-stat"><div class="num">12</div><div class="label">Destinations</div></div>
+                <div class="hero-stat"><div class="num">74</div><div class="label">Car Services</div></div>
+                <div class="hero-stat"><div class="num">13</div><div class="label">Destinations</div></div>
                 <div class="hero-stat"><div class="num">54</div><div class="label">Travel Days</div></div>
             </div>
         </div>
@@ -251,56 +230,8 @@
 
     <div class="main">
         <!-- Next Trip Up (Featured) -->
-        <div class="section-heading">Current & Upcoming Trips</div>
+        <div class="section-heading">Upcoming Trips</div>
         
-    <div class="featured-card" id="trip-20260330">
-        <div class="feat-top">
-            <div class="feat-header">
-                <div class="feat-emoji">🌴</div>
-                <div class="feat-title-wrap">
-                    <h2 class="feat-title" id="title-20260330" data-default="Los Angeles &rarr; Los Angeles (BUR)">Los Angeles &rarr; Los Angeles (BUR)</h2>
-                    <button class="rename-btn" onclick="renameTrip('20260330')" title="Rename trip">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-                    </button>
-                    <div class="feat-dates">Mar 30, 2026 — Apr 01, 2026</div>
-                    <div class="feat-purpose" id="purpose-feat-20260330" onclick="editPurpose('20260330')"></div>
-                </div>
-                <div class="feat-countdown">In progress</div>
-            </div>
-            <div class="feat-stats">
-                <div class="feat-stat"><span class="feat-stat-num">3</span><span class="feat-stat-label">days</span></div>
-                <div class="feat-stat"><span class="feat-stat-num">2</span><span class="feat-stat-label">flights</span></div>
-                <div class="feat-stat"><span class="feat-stat-num">1</span><span class="feat-stat-label">hotels</span></div>
-                <div class="feat-stat"><span class="feat-stat-num">5</span><span class="feat-stat-label">car services</span></div>
-            </div>
-        </div>
-        <div class="feat-body">
-            <div class="feat-itinerary">
-                <h4>Itinerary</h4>
-                <div class="feat-detail-list">
-                    <div class="chrono-day">Monday, Mar 30</div><div class="feat-detail"><span class="feat-icon">🏨</span><span>Stay: The Sun Rose West Hollywood, West Hollywood Confirmation 96502SF022573 — The Sun Rose West Hollywood, West Hollywood</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:30 PM</span>Walk to Building F Lobby / Shuttle leaves right at 4:55pm </span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:55 PM</span>Ground Shuttle LG Office to SJC</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">5:45 PM</span>Air Shuttle: SJC to BUR Flight</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">7:00 PM</span>7:00pm Netfleet pickup &gt; Sun Rose Hotel</span></div><div class="chrono-day">Tuesday, Mar 31</div><div class="feat-detail"><span class="feat-icon">🏨</span><span>Stay: The Sun Rose West Hollywood, West Hollywood Confirmation 96502SF023079 — The Sun Rose West Hollywood, West Hollywood</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">5:45 PM</span>6:00pm pickup / EPIC &gt; BUR Netfleet</span></div><div class="chrono-day">Wednesday, Apr 01</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">8:45 AM</span>Air Shuttle: BUR to SJC Flight</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">10:00 AM</span>Ground Shuttle SJC to LG Office</span></div>
-                </div>
-            </div>
-            <div class="feat-attachments">
-                <h4>Agendas & Files</h4>
-                <div class="attachment-list" id="attachments-20260330"></div>
-                <div class="attachment-actions">
-                    <button class="attach-btn" onclick="addLink('20260330')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                        Add Link
-                    </button>
-                    <button class="attach-btn" onclick="addNote('20260330')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                        Add Note
-                    </button>
-                    <button class="attach-btn" onclick="addFiles('20260330')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                        Attach File
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="featured-card" id="trip-20260412">
         <div class="feat-top">
             <div class="feat-header">
@@ -313,20 +244,20 @@
                     <div class="feat-dates">Apr 12, 2026 — Apr 22, 2026</div>
                     <div class="feat-purpose" id="purpose-feat-20260412" onclick="editPurpose('20260412')"></div>
                 </div>
-                <div class="feat-countdown">In 11 days</div>
+                <div class="feat-countdown">In 4 days</div>
             </div>
             <div class="feat-stats">
                 <div class="feat-stat"><span class="feat-stat-num">11</span><span class="feat-stat-label">days</span></div>
                 <div class="feat-stat"><span class="feat-stat-num">6</span><span class="feat-stat-label">flights</span></div>
                 <div class="feat-stat"><span class="feat-stat-num">2</span><span class="feat-stat-label">hotels</span></div>
-                <div class="feat-stat"><span class="feat-stat-num">11</span><span class="feat-stat-label">car services</span></div>
+                <div class="feat-stat"><span class="feat-stat-num">6</span><span class="feat-stat-label">car services</span></div>
             </div>
         </div>
         <div class="feat-body">
             <div class="feat-itinerary">
                 <h4>Itinerary</h4>
                 <div class="feat-detail-list">
-                    <div class="chrono-day">Sunday, Apr 12</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">10:00 AM</span>🚗  10:00 am Pick up / Home &gt; SFO</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">12:40 PM</span>Flight: SFO (DL7861) to ICN Confirmation HK3NAM</span></div><div class="feat-enrichment">Departs SFO Terminal 1 → Arrives ICN. Layover 2h 25m in Seoul.</div><div class="chrono-day">Monday, Apr 13</div><div class="feat-detail"><span class="feat-icon">🚗</span><span>APAC Ads 2026 Offsite (Bangkok) | 13-16 April</span></div><div class="feat-detail"><span class="feat-icon">🏨</span><span>Hotel: Four Seasons Bangkok - Confirmation 396838</span></div><div class="feat-enrichment">Confirmation #396838 | Check-in 3:00 PM | 300/1 Charoen Krung Rd, Sathorn, Bangkok 10120 | T: +66 2 032 0888 | Master account covers 3 nights (Apr 13-15). Late checkout requested for Apr 16.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">1:20 AM</span>Layover in ICN Seoul (2h 25m)</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">3:45 AM</span>Flight: ICN (DL7917) to BKK Confirmation HK3NAM</span></div><div class="feat-enrichment">Arrives BKK Suvarnabhumi 11:35pm local. Four Seasons limo meets at Gate 5, Exit B — look for hotel signage (no name displayed). BMW 7 Series.</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">9:35 AM</span>🚗 Four Seasons Limo: BKK Airport → Hotel</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:30 PM</span>APAC Ads Offsite - Hotel Buffet Breakfast</span></div><div class="chrono-day">Tuesday, Apr 14</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:30 PM</span>APAC Ads Offsite - Hotel Buffet Breakfast</span></div><div class="chrono-day">Wednesday, Apr 15</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:30 PM</span>APAC Ads Offsite - Hotel Buffet Breakfast</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">11:00 PM</span>🚗 Four Seasons Limo: Hotel → BKK Airport 1:00pm Pickup</span></div><div class="feat-enrichment">Updated pickup: 1:00 PM from hotel. BMW 7 Series. Charged to room. Allow 3hrs before TG409 departure at 4:25 PM.</div><div class="chrono-day">Thursday, Apr 16</div><div class="feat-detail"><span class="feat-icon">🏨</span><span>Hotel Stay: The Westin Singapore, Singapore Confirmation 73065514 — The Westin Singapore, Singapore</span></div><div class="feat-enrichment">Confirmation #73065514 | Check-in Thu Apr 16, 3:00 PM | Check-out Wed Apr 22, 12:00 PM | Guest Room, 1 King.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">2:25 AM</span>Flight: BKK (TG0409) to SIN Confirmation C84XX6</span></div><div class="feat-enrichment">Departs BKK 4:25 PM local → Arrives SIN Changi 7:40 PM local.</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:45 AM</span>🚗 7:45 pm pickup / SIN &gt; Westin Singapore </span></div><div class="feat-enrichment">7:45 PM pickup from Changi Airport → The Westin Singapore.</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">8:00 PM</span>[in person] Moritz / Gabe</span></div><div class="chrono-day">Tuesday, Apr 21</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">3:30 PM</span>6:30 am pick up / Car Service The Westin &gt; SIN airport</span></div><div class="feat-enrichment">6:30 AM pickup from The Westin → Changi Airport.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">6:00 PM</span>Flight: SIN (UA0002) to SFO Confirmation EWD535</span></div><div class="feat-enrichment">Departs SIN Changi → Arrives SFO. Confirmation EWD535.</div><div class="chrono-day">Wednesday, Apr 22</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">9:15 AM</span>Travel to correct Terminal go to Airport Lounge  </span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">4:00 PM</span>Break / Layover</span></div>
+                    <div class="chrono-day">Sunday, Apr 12</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">10:00 AM</span>🚗  10:00 am Pick up / Home &gt; SFO</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">12:40 PM</span>Flight: SFO (DL7861) to ICN Confirmation HK3NAM</span></div><div class="feat-enrichment">Departs SFO Terminal 1 → Arrives ICN. Layover 2h 25m in Seoul.</div><div class="chrono-day">Monday, Apr 13</div><div class="feat-detail"><span class="feat-icon">🏨</span><span>Hotel: Four Seasons Bangkok - Confirmation 396838</span></div><div class="feat-enrichment">Confirmation #396838 | Check-in 3:00 PM | 300/1 Charoen Krung Rd, Sathorn, Bangkok 10120 | T: +66 2 032 0888 | Master account covers 3 nights (Apr 13-15). Late checkout requested for Apr 16.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">1:20 AM</span>Layover in ICN Seoul (2h 25m)</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">3:45 AM</span>Flight: ICN (DL7917) to BKK Confirmation HK3NAM</span></div><div class="feat-enrichment">Arrives BKK Suvarnabhumi 11:35pm local. Four Seasons limo meets at Gate 5, Exit B — look for hotel signage (no name displayed). BMW 7 Series.</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">9:35 AM</span>🚗 Four Seasons Limo: BKK Airport → Hotel</span></div><div class="chrono-day">Wednesday, Apr 15</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">11:00 PM</span>🚗 Four Seasons Limo: Hotel → BKK Airport 1:00pm Pickup</span></div><div class="feat-enrichment">Updated pickup: 1:00 PM from hotel. BMW 7 Series. Charged to room. Allow 3hrs before TG409 departure at 4:25 PM.</div><div class="chrono-day">Thursday, Apr 16</div><div class="feat-detail"><span class="feat-icon">🏨</span><span>Hotel Stay: The Westin Singapore, Singapore Confirmation 73065514 — The Westin Singapore, Singapore</span></div><div class="feat-enrichment">Confirmation #73065514 | Check-in Thu Apr 16, 3:00 PM | Check-out Wed Apr 22, 12:00 PM | Guest Room, 1 King.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">2:25 AM</span>Flight: BKK (TG0409) to SIN Confirmation C84XX6</span></div><div class="feat-enrichment">Departs BKK 4:25 PM local → Arrives SIN Changi 7:40 PM local.</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:45 AM</span>🚗 7:45 pm pickup / SIN &gt; Westin Singapore </span></div><div class="feat-enrichment">7:45 PM pickup from Changi Airport → The Westin Singapore.</div><div class="chrono-day">Tuesday, Apr 21</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">3:30 PM</span>6:30 am pick up / Car Service The Westin &gt; SIN airport</span></div><div class="feat-enrichment">6:30 AM pickup from The Westin → Changi Airport.</div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">6:00 PM</span>Flight: SIN (UA0002) to SFO Confirmation EWD535</span></div><div class="feat-enrichment">Departs SIN Changi → Arrives SFO. Confirmation EWD535.</div><div class="chrono-day">Wednesday, Apr 22</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">9:15 AM</span>Travel to correct Terminal go to Airport Lounge  </span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">4:00 PM</span>Break / Layover</span></div>
                 </div>
             </div>
             <div class="feat-attachments">
@@ -349,14 +280,78 @@
             </div>
         </div>
     </div>
+    <div class="featured-card" id="trip-20260427">
+        <div class="feat-top">
+            <div class="feat-header">
+                <div class="feat-emoji">🌴</div>
+                <div class="feat-title-wrap">
+                    <h2 class="feat-title" id="title-20260427" data-default="Los Angeles (BUR)">Los Angeles (BUR)</h2>
+                    <button class="rename-btn" onclick="renameTrip('20260427')" title="Rename trip">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    </button>
+                    <div class="feat-dates">Apr 27, 2026 — Apr 28, 2026</div>
+                    <div class="feat-purpose" id="purpose-feat-20260427" onclick="editPurpose('20260427')"></div>
+                </div>
+                <div class="feat-countdown">In 19 days</div>
+            </div>
+            <div class="feat-stats">
+                <div class="feat-stat"><span class="feat-stat-num">2</span><span class="feat-stat-label">days</span></div>
+                <div class="feat-stat"><span class="feat-stat-num">2</span><span class="feat-stat-label">flights</span></div>
+                <div class="feat-stat"><span class="feat-stat-num">0</span><span class="feat-stat-label">hotels</span></div>
+                <div class="feat-stat"><span class="feat-stat-num">6</span><span class="feat-stat-label">car services</span></div>
+            </div>
+        </div>
+        <div class="feat-body">
+            <div class="feat-itinerary">
+                <h4>Itinerary</h4>
+                <div class="feat-detail-list">
+                    <div class="chrono-day">Monday, Apr 27</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:45 PM</span>Book car service</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:55 PM</span>Ground Shuttle LG Office to SJC</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">5:45 PM</span>Air Shuttle: SJC to BUR Flight</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">7:00 PM</span>Book car service</span></div><div class="chrono-day">Tuesday, Apr 28</div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">7:00 AM</span>Travel to Egyptian Theater Hollywood</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">4:35 PM</span>Ground Shuttle LA Office to BUR</span></div><div class="feat-detail"><span class="feat-icon">✈️</span><span><span class="flight-time">5:45 PM</span>Air Shuttle: BUR to SJC Flight</span></div><div class="feat-detail"><span class="feat-icon">🚗</span><span><span class="flight-time">7:00 PM</span>Crystal to book car service home</span></div>
+                </div>
+            </div>
+            <div class="feat-attachments">
+                <h4>Agendas & Files</h4>
+                <div class="attachment-list" id="attachments-20260427"></div>
+                <div class="attachment-actions">
+                    <button class="attach-btn" onclick="addLink('20260427')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        Add Link
+                    </button>
+                    <button class="attach-btn" onclick="addNote('20260427')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        Add Note
+                    </button>
+                    <button class="attach-btn" onclick="addFiles('20260427')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                        Attach File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
         <!-- Upcoming Trips -->
         
         <div class="snapshot-section" style="margin-top:40px;">
-            <div class="section-heading">Trips Coming Up <span class="badge">1</span></div>
+            <div class="section-heading">Trips Coming Up <span class="badge">2</span></div>
             <table class="snap-table">
                 <thead><tr><th></th><th>Trip</th><th>Dates</th><th>Days</th><th>Flights</th><th>Hotels</th><th>Car Svc</th><th>Status</th></tr></thead>
                 <tbody>
+    <tr class="snap-row upcoming" data-trip-id="20260503">
+        <td class="snap-emoji">✈️</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260503" data-default="Newark">Newark</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260503')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260503" onclick="editPurpose('20260503')"></div>
+        </td>
+        <td class="snap-dates">May 03, 2026 — May 03, 2026</td>
+        <td class="snap-num">1d</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">0</td>
+        <td class="snap-num">2</td>
+        <td><span class="snap-badge upcoming">UPCOMING</span></td>
+    </tr>
     <tr class="snap-row upcoming" data-trip-id="20260601">
         <td class="snap-emoji">🌴</td>
         <td class="snap-name">
@@ -366,11 +361,11 @@
             </button>
             <div class="snap-purpose" id="purpose-20260601" onclick="editPurpose('20260601')"></div>
         </td>
-        <td class="snap-dates">Jun 01, 2026 — Jun 03, 2026</td>
-        <td class="snap-num">3d</td>
+        <td class="snap-dates">Jun 01, 2026 — Jun 01, 2026</td>
+        <td class="snap-num">1d</td>
         <td class="snap-num">1</td>
         <td class="snap-num">1</td>
-        <td class="snap-num">2</td>
+        <td class="snap-num">1</td>
         <td><span class="snap-badge upcoming">UPCOMING</span></td>
     </tr></tbody>
             </table>
@@ -380,7 +375,7 @@
         <!-- Completed Trips -->
         
         <div class="snapshot-section">
-            <div class="section-heading">Completed Trips <span class="badge">11</span></div>
+            <div class="section-heading">Completed Trips <span class="badge">12</span></div>
             <table class="snap-table">
                 <thead><tr><th></th><th>Trip</th><th>Dates</th><th>Days</th><th>Flights</th><th>Hotels</th><th>Car Svc</th><th>Status</th></tr></thead>
                 <tbody>
@@ -416,20 +411,20 @@
         <td class="snap-num">9</td>
         <td><span class="snap-badge completed">COMPLETED</span></td>
     </tr>
-    <tr class="snap-row completed" data-trip-id="20260203">
+    <tr class="snap-row completed" data-trip-id="20260204">
         <td class="snap-emoji">⛷️</td>
         <td class="snap-name">
-            <span class="snap-dest" id="snap-title-20260203" data-default="Salt Lake City &rarr; Columbus, OH">Salt Lake City &rarr; Columbus, OH</span>
-            <button class="rename-btn-sm" onclick="renameTrip('20260203')" title="Rename">
+            <span class="snap-dest" id="snap-title-20260204" data-default="Salt Lake City &rarr; Columbus, OH">Salt Lake City &rarr; Columbus, OH</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260204')" title="Rename">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
             </button>
-            <div class="snap-purpose" id="purpose-20260203" onclick="editPurpose('20260203')"></div>
+            <div class="snap-purpose" id="purpose-20260204" onclick="editPurpose('20260204')"></div>
         </td>
-        <td class="snap-dates">Feb 03, 2026 — Feb 04, 2026</td>
-        <td class="snap-num">2d</td>
+        <td class="snap-dates">Feb 04, 2026 — Feb 04, 2026</td>
+        <td class="snap-num">1d</td>
         <td class="snap-num">3</td>
         <td class="snap-num">0</td>
-        <td class="snap-num">2</td>
+        <td class="snap-num">1</td>
         <td><span class="snap-badge completed">COMPLETED</span></td>
     </tr>
     <tr class="snap-row completed" data-trip-id="20260206">
@@ -559,13 +554,29 @@
         <td class="snap-num">1</td>
         <td class="snap-num">6</td>
         <td><span class="snap-badge completed">COMPLETED</span></td>
+    </tr>
+    <tr class="snap-row completed" data-trip-id="20260330">
+        <td class="snap-emoji">🌴</td>
+        <td class="snap-name">
+            <span class="snap-dest" id="snap-title-20260330" data-default="Los Angeles &rarr; Los Angeles (BUR)">Los Angeles &rarr; Los Angeles (BUR)</span>
+            <button class="rename-btn-sm" onclick="renameTrip('20260330')" title="Rename">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <div class="snap-purpose" id="purpose-20260330" onclick="editPurpose('20260330')"></div>
+        </td>
+        <td class="snap-dates">Mar 30, 2026 — Apr 01, 2026</td>
+        <td class="snap-num">3d</td>
+        <td class="snap-num">2</td>
+        <td class="snap-num">1</td>
+        <td class="snap-num">5</td>
+        <td><span class="snap-badge completed">COMPLETED</span></td>
     </tr></tbody>
             </table>
         </div>
         
 
         <div class="generated">
-            Generated on March 31, 2026 — Data pulled from Google Calendar travel-coded events
+            Generated on April 07, 2026 — Data pulled from Google Calendar travel-coded events
         </div>
     </div>
 
@@ -600,7 +611,6 @@
             return new Promise((resolve, reject) => {
                 const token = getToken();
                 if (token) { resolve(token); return; }
-                // Show auth modal
                 openModal('Connect to GitHub', `
                     <div class="auth-modal">
                         <svg class="gh-logo" width="48" height="48" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -624,7 +634,6 @@
                 `, async () => {
                     const t = document.getElementById('m-token').value.trim();
                     if (!t) throw new Error('Token is required');
-                    // Validate token
                     const test = await fetch(API_URL, {
                         headers: { Authorization: `token ${t}`, Accept: 'application/vnd.github.v3+json' }
                     });
@@ -632,7 +641,6 @@
                     localStorage.setItem('gabe-travel-token', t);
                     resolve(t);
                 });
-                // Override cancel to reject
                 const origClose = closeModal;
                 document.querySelector('#modal-overlay .modal-btn.secondary').onclick = () => { origClose(); reject(new Error('cancelled')); };
             });
@@ -653,7 +661,6 @@
 
         async function saveData(message) {
             const token = await requireToken();
-            // Get current SHA
             const file = await fetchDataFromAPI();
             const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2) + '\n')));
             const resp = await fetch(API_URL, {
